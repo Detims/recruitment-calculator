@@ -19,7 +19,7 @@ const Cart = ({cart, removeItem}) => {
     return(
         <div className="relative min-h-screen flex flex-col text-center justify-center">
             {cart.length === 0 ? (
-                <h1 className="text-xl">Your cart is empty</h1>
+                <h1 className="text-6xl font-bold">Your cart is empty</h1>
             ) : (
                 <>
                     <ul className="p-12 mt-16">{list}</ul>

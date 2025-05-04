@@ -32,7 +32,7 @@ const Shop = () => {
     return(
         <div className="min-h-screen flex flex-col mx-auto text-center justify-center pt-32">
             {/* Desktop Layout */}
-            <ul className="flex flex-col md:grid md:grid-cols-4 gap-8 mx-auto w-8/12">
+            <ul className="flex flex-col md:grid md:grid-cols-4 gap-8 mx-auto w-8/12 mb-8">
                 {data.map((item) => {
                     return(
                     <li key={item.id} className="w-full hover:shadow-2xl rounded-xl cursor-pointer">
