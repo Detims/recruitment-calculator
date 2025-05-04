@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
 
 const Shop = () => {
@@ -31,18 +30,18 @@ const Shop = () => {
     if (error) return <p>An error has occurred.</p>
 
     return(
-        <div className="relative w-full min-h-screen flex flex-col mx-auto text-center justify-center pt-32">
+        <div className="min-h-screen flex flex-col mx-auto text-center justify-center pt-32">
             {/* Desktop Layout */}
-            <ul className="hidden md:grid md:grid-cols-4 gap-8 mx-auto">
+            <ul className="flex flex-col md:grid md:grid-cols-4 gap-8 mx-auto w-8/12">
                 {data.map((item) => {
                     return(
-                    <li key={item.id} className="w-3xs">
+                    <li key={item.id} className="w-full hover:shadow-2xl rounded-xl cursor-pointer">
                         <Link to={`/shop/${item.id}`}>
                         <img 
                             src={item.image} alt="item" 
-                            className="w-full"
+                            className="p-1"
                         />
-                        <h2>{item.title}</h2>
+                        <h2 className="mt-4">{item.title}</h2>
                         </Link>
                     </li>
                     )

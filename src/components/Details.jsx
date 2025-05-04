@@ -1,26 +1,27 @@
 import { useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 
-const Details = () => {
+const Details = ({addToCart}) => {
     const { id } = useParams()
     const [data, setData] = useState()
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [quantity, setQuantity] = useState(1)
 
-    const increaseQuantity = () => {setQuantity(quantity + 1)}
+    const increaseQuantity = () => {
+        setData({ ...data, quantity: data.quantity + 1 })
+    }
 
     const decreaseQuantity = () => {
-        if (quantity === 1) return
-        setQuantity(quantity - 1)
+        if (data.quantity === 1) return
+        setData({ ...data, quantity: data.quantity - 1 })
     }
 
     const quantityHandler = (e) => {
-        setQuantity(e.target.value)
+        setData({ ...data, quantity: e.target.value })
     }
 
     const setDefaultQuantity = () => {
-        if (quantity <= 0) {setQuantity(1)}
+        if (data.quantity <= 0) {setData({ ...data, quantity: 1 })}
     }
 
     // Call the Fakestore API to get the right product using the page id
@@ -37,10 +38,11 @@ const Details = () => {
 
         // set state when the data received
         setData(data)
+        setData(prevData => ({...prevData, quantity: 1}))
         }
 
         dataFetch()
-    }, [])
+    }, [id])
 
     if (loading) return <p>Loading...</p>
     if (error) return <p>An error has occurred.</p>
@@ -63,7 +65,7 @@ const Details = () => {
                     >-</button>
                     <input
                         type="number"
-                        value={quantity || 1}
+                        value={data.quantity || 1}
                         className="w-12 p-1.5 mt-4 ml-2.5 mr-2.5 text-lg text-center border-1"
                         onChange={quantityHandler}
                         onBlur={setDefaultQuantity}
@@ -73,6 +75,10 @@ const Details = () => {
                         onClick={increaseQuantity}
                     >+</button>
                 </div>
+                <button 
+                    className="mt-8 p-4 rounded-2xl"
+                    onClick={() => addToCart(data)}
+                >Add to Cart</button>
             </div>
         </div>
     )
