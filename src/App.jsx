@@ -1,14 +1,49 @@
-import data from "./assets/data"
 import { useEffect, useState } from "react"
 
 const App = () => {
-  const [operatorList, setOperatorList] = useState([])  
-  const [information, setInformation] = useState([])
+  const [operatorList, setOperatorList] = useState([])
+  const [operatorKeys, setOperatorKeys] = useState([])
+  const [operatorInformation, setOperatorInformation] = useState([])
   const [filter, setFilter] = useState({
     rarity: 0,
     class: '',
     tags: [],
   })
+
+  useEffect(() => {
+    fetch('https://awedtan.ca/api/recruitpool')
+      .then(res => res.json())
+      .then(json => {
+        console.log(json[0].value)
+        setOperatorKeys(json[0].value)
+      })
+  }, [])
+
+  useEffect(() => {
+    if (operatorKeys.length === 0) return
+
+    const fetches = operatorKeys.map(key => 
+      fetch(`https://awedtan.ca/api/operator/searchV2?filter={"id":"${key}"}&include=data.name&include=data.profession&include=data.rarity&include=data.tagList`)
+        .then(res => res.json())
+        .then(json => json[0].value.data)
+    )
+
+    Promise.all(fetches).then(results => {
+      console.log(results)
+      setOperatorInformation(results)
+    })
+
+    // operatorKeys.forEach((key) => {
+    //       // Finish this part
+    //       // fetch(`https://awedtan.ca/api/operator/match/${key}&include=data.name&include=data.rarity&include=data.tagList`)
+    //         fetch(`https://awedtan.ca/api/operator/searchV2?filter={"id":"${key}"}`)
+    //         .then(res => res.json())
+    //         .then(json => {
+    //           console.log(json)
+    //           // setOperatorInformation()
+    //         })
+    //     })
+  }, [operatorKeys])
 
   const classes = ['Vanguard', 'Guard', 'Defender', 'Sniper', 'Caster', 'Medic', 'Supporter', 'Specialist']
   const tags = ['Crowd Control', 'Nuker', 'Healing', 'Support', 'DP-Recovery', 'DPS', 'Survival', 'AoE', 'Defense',
@@ -53,10 +88,10 @@ const App = () => {
       console.log('list is empty')
       setOperatorList([])
     } else {
-      const filtered = data.filter(op => {
-        const matchClass = filter.class === '' || op.class === filter.class
-        const matchRarity = filter.rarity === 0 || op.rarity === filter.rarity
-        const matchTags = filter.tags.length === 0 || filter.tags.every(t => op.tags.includes(t))
+      const filtered = operatorInformation.filter(op => {
+        const matchClass = filter.class === '' || op.profession === filter.class
+        const matchRarity = filter.rarity === 0 || Number(op.rarity.at(-1)) === filter.rarity
+        const matchTags = filter.tags.length === 0 || filter.tags.every(t => op.tagList.includes(t))
         
         // console.log(typeof op.rarity, typeof filter.rarity, matchRarity)
         return matchClass && matchRarity && matchTags
@@ -66,7 +101,7 @@ const App = () => {
       ({
         name: op.name,
         rarity: op.rarity,
-        tags: op.tags
+        tags: op.tagList
       }
       )))
     }
@@ -126,7 +161,7 @@ const App = () => {
           return(
             <button
               key={index}
-              className={`w-fit p-3 ${filter.class === t ? 'selected' : ''}`}
+              className={`w-fit p-3 ${filter.tags.includes(t) ? 'selected' : ''}`}
               onClick={() => updateTags(t)}
             ><p className="text-sm">{t}</p></button>
           )
