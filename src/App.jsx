@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 
 const App = () => {
+  const [loading, setLoading] = useState(true)
   const [operatorList, setOperatorList] = useState([])
   const [operatorKeys, setOperatorKeys] = useState([])
   const [operatorInformation, setOperatorInformation] = useState([])
@@ -45,20 +46,9 @@ const App = () => {
     )
 
     Promise.all(fetches).then(results => {
-      console.log(results)
+      // console.log(results)
       setOperatorInformation(results)
-    })
-
-    // operatorKeys.forEach((key) => {
-    //       // Finish this part
-    //       // fetch(`https://awedtan.ca/api/operator/match/${key}&include=data.name&include=data.rarity&include=data.tagList`)
-    //         fetch(`https://awedtan.ca/api/operator/searchV2?filter={"id":"${key}"}`)
-    //         .then(res => res.json())
-    //         .then(json => {
-    //           console.log(json)
-    //           // setOperatorInformation()
-    //         })
-    //     })
+    }).finally(() => setLoading(false))
   }, [operatorKeys])
 
   const classes = ['Vanguard', 'Guard', 'Defender', 'Sniper', 'Caster', 'Medic', 'Supporter', 'Specialist']
@@ -101,7 +91,6 @@ const App = () => {
 
   useEffect(() => {
     if (filter.rarity === 0 && filter.class === '' && filter.tags.length === 0) {
-      console.log('list is empty')
       setOperatorList([])
     } else {
       const filtered = operatorInformation.filter(op => {
@@ -123,23 +112,7 @@ const App = () => {
     }
   }, [filter])
 
-  // Remove this later
-  function updateOperatorList() {
-    // Show nothing if there are no filters in place
-    if (filter.rarity === 0 && filter.class === '' && filter.tags.length === 0) {
-      console.log('list is empty')
-      setOperatorList([])
-    } else {
-      setOperatorList(data.filter((op) => 
-        filter.class === op.class).map((operator) => 
-      ({
-        name: operator.name,
-        rarity: operator.rarity,
-        tags: operator.tags
-      }
-      )))
-    }
-  }
+  if (loading) return (<h1>Loading...</h1>)
 
   return(
     <div className="flex flex-col min-h-screen">
