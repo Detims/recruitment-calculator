@@ -25,7 +25,23 @@ const App = () => {
     const fetches = operatorKeys.map(key => 
       fetch(`https://awedtan.ca/api/operator/searchV2?filter={"id":"${key}"}&include=data.name&include=data.profession&include=data.rarity&include=data.tagList`)
         .then(res => res.json())
-        .then(json => json[0].value.data)
+        .then(json => {
+          // Modify json data for filter logic
+          const op = json[0].value.data
+          const job = op.profession
+          return {
+            name: op.name,
+            class: 
+              job === 'PIONEER' ? 'Vanguard' 
+              : job === 'WARRIOR' ? 'Guard'
+              : job === 'TANK' ? 'Defender'
+              : job === 'SUPPORT' ? 'Supporter'
+              : job === 'SPECIAL' ? 'Specialist'
+              : job.charAt(0) + job.slice(1).toLowerCase(),
+            rarity: Number(op.rarity.at(-1)),
+            tags: op.tagList,
+          }
+        })
     )
 
     Promise.all(fetches).then(results => {
@@ -46,7 +62,7 @@ const App = () => {
   }, [operatorKeys])
 
   const classes = ['Vanguard', 'Guard', 'Defender', 'Sniper', 'Caster', 'Medic', 'Supporter', 'Specialist']
-  const tags = ['Crowd Control', 'Nuker', 'Healing', 'Support', 'DP-Recovery', 'DPS', 'Survival', 'AoE', 'Defense',
+  const tags = ['Crowd-Control', 'Nuker', 'Healing', 'Support', 'DP-Recovery', 'DPS', 'Survival', 'AoE', 'Defense',
     'Slow', 'Debuff', 'Fast-Redeploy', 'Shift', 'Summon', 'Robot', 'Elemental'
   ]
 
@@ -89,9 +105,9 @@ const App = () => {
       setOperatorList([])
     } else {
       const filtered = operatorInformation.filter(op => {
-        const matchClass = filter.class === '' || op.profession === filter.class
-        const matchRarity = filter.rarity === 0 || Number(op.rarity.at(-1)) === filter.rarity
-        const matchTags = filter.tags.length === 0 || filter.tags.every(t => op.tagList.includes(t))
+        const matchClass = filter.class === '' || op.class === filter.class
+        const matchRarity = filter.rarity === 0 || op.rarity === filter.rarity
+        const matchTags = filter.tags.length === 0 || filter.tags.every(t => op.tags.includes(t))
         
         // console.log(typeof op.rarity, typeof filter.rarity, matchRarity)
         return matchClass && matchRarity && matchTags
@@ -179,10 +195,6 @@ const App = () => {
           )
         })}
       </ul>
-      <button 
-        className="w-fit mx-auto mt-8 p-4 rounded-2xl"
-        onClick={updateOperatorList}
-      >Refresh</button>
     </div>
   )
 }
