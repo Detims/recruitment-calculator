@@ -112,62 +112,72 @@ const App = () => {
     }
   }, [filter])
 
-  if (loading) return (<h1>Loading...</h1>)
+  if (loading) return (<h1 className="mx-auto text-6xl">Loading...</h1>)
 
   return(
     <div className="flex flex-col min-h-screen">
-      <h1 className="text-5xl">Recruitment Calculator</h1>
-      { /* Class Filter */}
-      <h2>Classes</h2>
-      <div className="flex gap-2">
-        {classes.map((c, index) => {
-          return(
-            <button
-              key={index}
-              className={`w-fit p-3 ${filter.class === c ? 'selected' : ''}`}
-              onClick={() => updateClass(c)}
-            ><p className="text-sm">{c}</p></button>
-          )
-        })}
+      <h1 className="text-5xl mx-auto py-6">Recruitment Calculator</h1>
+      <div className="mx-10 px-6 py-4 bg-gray-800 shadow-2xl">
+        { /* Class Filter */}
+        <h2 className="text-xl">Classes</h2>
+        <div className="flex gap-2">
+          {classes.map((c, index) => {
+            return(
+              <button
+                key={index}
+                className={`w-fit p-3 ${filter.class === c ? 'selected' : ''}`}
+                onClick={() => updateClass(c)}
+              ><p className="text-sm">{c}</p></button>
+            )
+          })}
+        </div>
+        {/* Rarity Filter */}
+        <h2 className="text-xl">Rarity</h2>
+        <div className="flex gap-2">
+          {[1,2,3,4,5,6].map((r, index) => {
+            return(
+              <button
+                key={index}
+                className={`w-fit p-3 ${filter.rarity === r ? 'selected' : ''}`}
+                onClick={() => updateRarity(r)}
+              ><p className="text-sm">{r}</p></button>
+            )
+          })}
+        </div>
+        {/* Tag Filter */}
+        <h2 className="text-xl">Tags</h2>
+        <div className="flex gap-2">
+          {tags.map((t, index) => {
+            return(
+              <button
+                key={index}
+                className={`w-fit p-3 ${filter.tags.includes(t) ? 'selected' : ''}`}
+                onClick={() => updateTags(t)}
+              ><p className="text-sm">{t}</p></button>
+            )
+          })}
+        </div>
+      
+        <ul className="grid grid-cols-10 gap-2 mx-auto mb-8 mt-4">
+          {operatorList.map((operator, index) => {
+            // Add a color background based on rarity and try to use API for images?
+            return(
+              <li 
+                key={index}
+                className="w-full text-center"
+              >
+                <h2 className="mt-4">{operator.name}</h2>
+              </li>
+            )
+          })}
+        </ul>
+        <button
+          className="mx-auto p-3 w-fit"
+          onClick={() => setFilter({rarity: 0, class: '', tags: [],})}
+        >
+          Clear Tags
+        </button>
       </div>
-      {/* Rarity Filter */}
-      <h2>Rarity</h2>
-      <div className="flex gap-2">
-        {[1,2,3,4,5,6].map((r, index) => {
-          return(
-            <button
-              key={index}
-              className={`w-fit p-3 ${filter.rarity === r ? 'selected' : ''}`}
-              onClick={() => updateRarity(r)}
-            ><p className="text-sm">{r}</p></button>
-          )
-        })}
-      </div>
-      {/* Tag Filter */}
-      <h2>Tags</h2>
-      <div className="flex gap-2">
-        {tags.map((t, index) => {
-          return(
-            <button
-              key={index}
-              className={`w-fit p-3 ${filter.tags.includes(t) ? 'selected' : ''}`}
-              onClick={() => updateTags(t)}
-            ><p className="text-sm">{t}</p></button>
-          )
-        })}
-      </div>
-      <ul className="grid grid-cols-10 gap-8 mx-auto mb-8">
-        {operatorList.map((operator, index) => {
-          return(
-            <li 
-              key={index}
-              className="w-full"
-            >
-              <h2 className="mt-4">{operator.name}</h2>
-            </li>
-          )
-        })}
-      </ul>
     </div>
   )
 }
