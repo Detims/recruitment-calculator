@@ -11,6 +11,11 @@ const App = () => {
     tags: [],
   })
 
+  const classes = ['Vanguard', 'Guard', 'Defender', 'Sniper', 'Caster', 'Medic', 'Supporter', 'Specialist']
+  const tags = ['Crowd-Control', 'Nuker', 'Healing', 'Support', 'DP-Recovery', 'DPS', 'Survival', 'AoE', 'Defense',
+                'Slow', 'Debuff', 'Fast-Redeploy', 'Shift', 'Summon', 'Robot', 'Elemental']
+  const rarities = [1,2,3,4,5,6]
+
   useEffect(() => {
     fetch('https://awedtan.ca/api/recruitpool')
       .then(res => res.json())
@@ -51,11 +56,6 @@ const App = () => {
     }).finally(() => setLoading(false))
   }, [operatorKeys])
 
-  const classes = ['Vanguard', 'Guard', 'Defender', 'Sniper', 'Caster', 'Medic', 'Supporter', 'Specialist']
-  const tags = ['Crowd-Control', 'Nuker', 'Healing', 'Support', 'DP-Recovery', 'DPS', 'Survival', 'AoE', 'Defense',
-    'Slow', 'Debuff', 'Fast-Redeploy', 'Shift', 'Summon', 'Robot', 'Elemental'
-  ]
-
   function updateClass(classType) {
     // Change class filter to different class, otherwise empty it
     setFilter(prev => ({
@@ -89,6 +89,17 @@ const App = () => {
     })
   }
 
+  function operatorSort(a, b) {
+    if (a.rarity < b.rarity) {
+      return 1
+    }
+    if (a.rarity > b.rarity) {
+      return -1
+    }
+
+    return 0
+  }
+
   useEffect(() => {
     if (filter.rarity === 0 && filter.class === '' && filter.tags.length === 0) {
       setOperatorList([])
@@ -102,13 +113,17 @@ const App = () => {
         return matchClass && matchRarity && matchTags
       })
 
-      setOperatorList(filtered.map((op) => 
-      ({
-        name: op.name,
-        rarity: op.rarity,
-        tags: op.tagList
-      }
-      )))
+      filtered.map((op) => 
+        ({
+          name: op.name,
+          rarity: op.rarity,
+          tags: op.tagList
+        }
+      ))
+
+      filtered.sort(operatorSort)
+
+      setOperatorList(filtered)
     }
   }, [filter])
 
@@ -131,10 +146,11 @@ const App = () => {
             )
           })}
         </div>
+
         {/* Rarity Filter */}
-        <h2 className="text-xl">Rarity</h2>
-        <div className="flex gap-2">
-          {[1,2,3,4,5,6].map((r, index) => {
+        <h2 className="text-xl pt-4">Rarity</h2>
+        <div className="flex pt-1 gap-2">
+          {rarities.map((r, index) => {
             return(
               <button
                 key={index}
@@ -144,9 +160,10 @@ const App = () => {
             )
           })}
         </div>
+        
         {/* Tag Filter */}
-        <h2 className="text-xl">Tags</h2>
-        <div className="flex gap-2">
+        <h2 className="text-xl pt-4">Tags</h2>
+        <div className="flex pt-1 gap-2">
           {tags.map((t, index) => {
             return(
               <button
@@ -164,9 +181,16 @@ const App = () => {
             return(
               <li 
                 key={index}
-                className="w-full text-center"
+                className={`w-full text-center my-2 text-black ${
+                  operator.rarity === 1 ? 'bg-stone-400' :
+                  operator.rarity === 2 ? 'bg-lime-300' :
+                  operator.rarity === 3 ? 'bg-blue-500' :
+                  operator.rarity === 4 ? 'bg-indigo-400' :
+                  operator.rarity === 5 ? 'bg-amber-200' :
+                  operator.rarity === 6 ? 'bg-orange-400' : ''
+                }`}
               >
-                <h2 className="mt-4">{operator.name}</h2>
+                <h2 className="my-4">{operator.name}</h2>
               </li>
             )
           })}
