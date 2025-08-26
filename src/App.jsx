@@ -20,7 +20,7 @@ const App = () => {
     fetch('https://awedtan.ca/api/recruitpool')
       .then(res => res.json())
       .then(json => {
-        console.log(json[0].value)
+        // console.log(json[0].value)
         setOperatorKeys(json[0].value)
       })
   }, [])
@@ -57,7 +57,6 @@ const App = () => {
   }, [operatorKeys])
 
   function updateClass(classType) {
-    // Change class filter to different class, otherwise empty it
     setFilter(prev => ({
       ...prev,
       class: prev.class === classType ? '' : classType
@@ -73,15 +72,8 @@ const App = () => {
 
   function updateTags(tag) {
     setFilter(prev => {
-      const tagExists = prev.tags.includes(tag)
-      let newTags
-
-      if (tagExists) {
-        newTags = prev.tags.filter(t => t !== tag)
-      } else {
-        newTags = [...prev.tags, tag]
-      }
-
+      const newTags = prev.tags.includes(tag) ? prev.tags.filter(t => t !== tag) : [...prev.tags, tag]
+      
       return {
         ...prev,
         tags: newTags
